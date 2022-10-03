@@ -1,8 +1,9 @@
 from email.policy import default
 
 from django.db import models
-from wagtail.admin.edit_handlers import FieldPanel, PageChooserPanel
-from wagtail.core.fields import RichTextField
+from streams import blocks
+from wagtail.admin.panels import FieldPanel, PageChooserPanel
+from wagtail.core.fields import RichTextField, StreamField
 from wagtail.models import Page
 
 
@@ -34,11 +35,21 @@ class HomePage(Page):
         related_name="+"
     )
 
+    content = StreamField(
+        [
+            ("cta", blocks.CTABlock()),
+        ],
+        null=True,
+        blank=True,
+        use_json_field=True
+    )
+
     content_panels = Page.content_panels + [
         FieldPanel("banner_title"),
         FieldPanel("banner_subtitle"),
         FieldPanel("banner_image"),
-        PageChooserPanel("banner_cta")
+        PageChooserPanel("banner_cta"),
+        FieldPanel("content")
     ]
 
 
