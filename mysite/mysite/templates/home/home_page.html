@@ -13,6 +13,38 @@
       {% endif %}
   </div>
 
+  <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="true">
+    <div class="carousel-indicators">
+      {% for item in self.carousel_images.all %}
+        <button
+          type="button"
+          data-bs-target="#carouselExampleIndicators"
+          data-bs-slide-to="{{ forloop.counter0 }}"
+          class="{% if forloop.counter == 1 %} active {% endif %}"
+          aria-current="{% if forloop.counter == 1 %} true {% endif %}"
+          aria-label="Slide {{ forloop.counter }}"
+        >
+        </button>
+      {% endfor %}
+    </div>
+    <div class="carousel-inner">
+      {% for item in self.carousel_images.all %}
+        {% image item.image fill-1000x300 as img %}
+        <div class="carousel-item{% if forloop.counter == 1 %} active {% endif %}">
+          <img src="{{ img.url }}" class="d-block w-100" alt="{{ img.alt }}">
+        </div>
+      {% endfor %}
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+
   {% for block in page.content %}
     {% include_block block %}
   {% endfor %}
