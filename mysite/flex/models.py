@@ -4,7 +4,7 @@ Flexible page
 
 from django.db import models
 from streams import blocks
-from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
+from wagtail.admin.panels import FieldPanel
 from wagtail.core.fields import StreamField
 from wagtail.core.models import Page
 
@@ -21,14 +21,17 @@ class FlexPage(Page):
     content = StreamField(
         [
             ("title_and_text", blocks.TitleAndTextBlock()),
+            ("richtext_block", blocks.RichtextBlock()),
+            ("simple_richtext_block", blocks.SimpleRichtextBlock())
         ],
         null=True,
-        blank=True
+        blank=True,
+        use_json_field=True
     )
 
     content_panels = Page.content_panels + [
         FieldPanel("subtitle"),
-        StreamFieldPanel("content"),
+        FieldPanel("content"),
     ]
 
     class Meta:
