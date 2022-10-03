@@ -13,7 +13,7 @@ class FlexPage(Page):
     """
     Flexible page class
     """
-    
+
     template = "flex/flex_page.html"
 
     subtitle = models.CharField(max_length=100, null=True, blank=True)
@@ -22,7 +22,8 @@ class FlexPage(Page):
         [
             ("title_and_text", blocks.TitleAndTextBlock()),
             ("richtext_block", blocks.RichtextBlock()),
-            ("simple_richtext_block", blocks.SimpleRichtextBlock())
+            ("simple_richtext_block", blocks.SimpleRichtextBlock()),
+            ("card_block", blocks.CardBlock())
         ],
         null=True,
         blank=True,
