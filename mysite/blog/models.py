@@ -35,6 +35,17 @@ class BlogListingPage(RoutablePageMixin, Page):
         context = self.get_context(request, *args, **kwargs)
         context["posts"] = context["posts"][:1]
         return render(request, "blog/latest_posts.html", context)
+    
+    def get_sitemap_urls(self, request=None):
+        # Uncomment to have no sitemap for this page and its subpages
+        # return []
+        sitemap = super().get_sitemap_urls(request)
+        sitemap.append({
+            "location": self.full_url + self.reverse_subpage("latest_posts"),
+            "lastmod": (self.last_published_at or self.latest_revision_created_at),
+            "priority": 0.9,
+        })
+        return sitemap
 
 
 class BlogDetailsPage(Page):
