@@ -1,10 +1,47 @@
+from unittest.util import _MAX_LENGTH
+
 from django.db import models
 from django.shortcuts import render
 from streams import blocks
-from wagtail.admin.panels import FieldPanel
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.core.fields import StreamField
 from wagtail.core.models import Page
+from wagtail.snippets.models import register_snippet
+
+
+class BlogAuthor(models.Model):
+    """
+    Blog author for snippets or plain data to be associated with a blog post
+    """
+    name = models.CharField(max_length=100)
+    website = models.URLField(blank=True, null=True)
+    image = models.ForeignKey(
+        "wagtailimages.Image",
+        null=True,
+        blank=False,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+
+    panels = [
+        MultiFieldPanel([
+            FieldPanel("name"),
+            FieldPanel("image"),
+        ], heading="Name and Image"),
+        MultiFieldPanel([
+            FieldPanel("website"),
+        ], heading="Links")
+    ]
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Blog Author"
+        verbose_name_plural = "Blog Authors"
+
+register_snippet(BlogAuthor)
 
 
 class BlogListingPage(RoutablePageMixin, Page):
