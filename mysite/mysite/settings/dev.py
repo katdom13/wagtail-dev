@@ -13,6 +13,7 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 INSTALLED_APPS = INSTALLED_APPS + [  # noqa
     "debug_toolbar",
+    "django_extensions",
 ]
 
 MIDDLEWARE = MIDDLEWARE + [  # noqa
