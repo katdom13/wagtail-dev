@@ -1,14 +1,43 @@
+from unicodedata import category
 from unittest.util import _MAX_LENGTH
 
+from django import forms
 from django.db import models
 from django.shortcuts import render
-from modelcluster.fields import ParentalKey
+from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from streams import blocks
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.core.fields import StreamField
 from wagtail.core.models import Orderable, Page
 from wagtail.snippets.models import register_snippet
+
+
+class BlogCategory(models.Model):
+    """
+    Category for a blog
+    """
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(
+        verbose_name="slug",
+        allow_unicode=True,
+        max_length=255,
+        help_text="A slug to identify posts in this category"
+    )
+    panels = [
+        FieldPanel("name"),
+        FieldPanel("slug"),
+    ]
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Blog Category"
+        verbose_name_plural = "Blog Categories"
+        ordering = ["name"]
+
+register_snippet(BlogCategory)
 
 
 class BlogAuthorOrderable(Orderable):
@@ -80,6 +109,12 @@ class BlogListingPage(RoutablePageMixin, Page):
         context = super().get_context(request, *args, **kwargs)
         context["posts"] = BlogDetailsPage.objects.live().public()
         context["a_special_link"] = self.reverse_subpage("latest_posts")
+        context["categories"] = BlogCategory.objects.all()
+
+        if request.GET.get("category"):
+            category = request.GET["category"]
+            context["posts"] = context["posts"].filter(categories__slug__in=[category])
+
         return context
 
     @route(r"^latest/?$", name="latest_posts")
@@ -121,6 +156,8 @@ class BlogDetailsPage(Page):
         related_name="+",
     )
 
+    categories = ParentalManyToManyField("blog.BlogCategory", blank=True)
+
     content = StreamField(
         [
             ("title_and_text", blocks.TitleAndTextBlock()),
@@ -140,5 +177,8 @@ class BlogDetailsPage(Page):
         MultiFieldPanel([
             InlinePanel("blog_authors", label="Author", min_num=1, max_num=4),
         ], heading="Author(s)"),
+        MultiFieldPanel([
+            FieldPanel("categories", widget=forms.CheckboxSelectMultiple)
+        ], heading="Categories"),
         FieldPanel("content"),
     ]
