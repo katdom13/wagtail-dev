@@ -1,6 +1,7 @@
 from email.policy import default
 
 from django.db import models
+from django.shortcuts import render
 from modelcluster.fields import ParentalKey
 from streams import blocks
 from wagtail.admin.panels import (
@@ -9,6 +10,7 @@ from wagtail.admin.panels import (
     MultiFieldPanel,
     PageChooserPanel,
 )
+from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.models import Orderable, Page
 
@@ -30,7 +32,7 @@ class HomePageCarouselImages(Orderable):
     ]
 
 
-class HomePage(Page):
+class HomePage(RoutablePageMixin, Page):
     """
     Home page model
     """
@@ -85,3 +87,11 @@ class HomePage(Page):
     class Meta:
         verbose_name = "Home Page"
         verbose_name_plural = "Home Pages"
+
+
+    # A routable page is a page that wagtail has not much control with
+    # Kind of an almost static subpage
+    @route(r"^subscribe/?$")
+    def subscribe(self, request, *args, **kwargs):
+        context = self.get_context(request, *args, **kwargs)
+        return render(request, "home/subscribe.html", context)
