@@ -49,6 +49,14 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-8 offset-lg-2">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ self.youtube_video_id }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 offset-lg-2">
         {% for block in self.content %}
           {% include_block block %}
         {% endfor %}

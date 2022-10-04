@@ -182,3 +182,62 @@ class BlogDetailsPage(Page):
         ], heading="Categories"),
         FieldPanel("content"),
     ]
+
+
+# First subclassed page
+class ArticlePage(BlogDetailsPage):
+    """
+    A page specifically for articles based on a blog page
+    """
+    template = "blog/article_blog_page.html"
+
+    subtitle = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+    )
+    intro_image = models.ForeignKey(
+        "wagtailimages.Image",
+        null=True,
+        blank=False,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="Best size for this image is 1400x400"
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("custom_title"),
+        FieldPanel("subtitle"),
+        FieldPanel("blog_image"),
+        FieldPanel("intro_image"),
+        MultiFieldPanel([
+            InlinePanel("blog_authors", label="Author", min_num=1, max_num=4),
+        ], heading="Author(s)"),
+        MultiFieldPanel([
+            FieldPanel("categories", widget=forms.CheckboxSelectMultiple)
+        ], heading="Categories"),
+        FieldPanel("content"),
+    ]
+
+
+# Second subclassed page
+class VideoPage(BlogDetailsPage):
+    """
+    A page specifically for videos based on a blog page
+    """
+    template = "blog/video_blog_page.html"
+
+    youtube_video_id = models.CharField(max_length=30)
+
+    content_panels = Page.content_panels + [
+        FieldPanel("custom_title"),
+        FieldPanel("blog_image"),
+        MultiFieldPanel([
+            InlinePanel("blog_authors", label="Author", min_num=1, max_num=4),
+        ], heading="Author(s)"),
+        MultiFieldPanel([
+            FieldPanel("categories", widget=forms.CheckboxSelectMultiple)
+        ], heading="Categories"),
+        FieldPanel("youtube_video_id"),
+        FieldPanel("content"),
+    ]

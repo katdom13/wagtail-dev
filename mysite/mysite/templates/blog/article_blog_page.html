@@ -16,6 +16,10 @@
         {% endif %}
       </h1>
 
+      {% if self.subtitle %}
+          <h3>{{ self.subtitle }}</h3>
+      {% endif %}
+
       {% if self.categories.count %}
         <div style="padding: 0 20px 20px">
           {% for category in self.categories.all %}
@@ -46,9 +50,20 @@
     </div>
   </div>
 
+  {% if self.intro_image %}
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8">
+          {% image self.intro_image fill-1400x400 as intro_img %}
+          <img src="{{ intro_img.url }}" alt="{{ intro_img.alt }}">
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
   <div class="container">
     <div class="row">
-      <div class="col-lg-8 offset-lg-2">
+      <div class="col-lg-8">
         {% for block in self.content %}
           {% include_block block %}
         {% endfor %}
