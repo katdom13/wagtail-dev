@@ -2,12 +2,27 @@ from unittest.util import _MAX_LENGTH
 
 from django.db import models
 from django.shortcuts import render
+from modelcluster.fields import ParentalKey
 from streams import blocks
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.core.fields import StreamField
-from wagtail.core.models import Page
+from wagtail.core.models import Orderable, Page
 from wagtail.snippets.models import register_snippet
+
+
+class BlogAuthorOrderable(Orderable):
+    """
+    This allows us to select one or more blog authors from Snippets
+    """
+    page = ParentalKey("blog.BlogDetailsPage", related_name="blog_authors")
+    author = models.ForeignKey(
+        "blog.BlogAuthor",
+        on_delete=models.CASCADE,
+    )
+    panels = [
+        FieldPanel("author")
+    ]
 
 
 class BlogAuthor(models.Model):
@@ -122,5 +137,8 @@ class BlogDetailsPage(Page):
     content_panels = Page.content_panels + [
         FieldPanel("custom_title"),
         FieldPanel("blog_image"),
+        MultiFieldPanel([
+            InlinePanel("blog_authors", label="Author", min_num=1, max_num=4),
+        ], heading="Author(s)"),
         FieldPanel("content"),
     ]

@@ -3,22 +3,39 @@
 {% load wagtailcore_tags wagtailimages_tags %}
 
 {% block content %}
-    {% image self.blog_image fill-1200x300 as banner %}
-    <img src="{{ banner.url }}" alt="{{ banner.alt }}" style='width: 100%; height: auto;'>
+  {% image self.blog_image fill-1200x300 as banner %}
+  <img src="{{ banner.url }}" alt="{{ banner.alt }}" style='width: 100%; height: auto;'>
 
-    <div class="container mt-5 mb-5">
-        <div class="text-center">
-            <h1>{{ self.custom_title }}</h1>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 offset-lg-2">
-                {% for block in self.content %}
-                    {% include_block block %}
-                {% endfor %}
+  <div class="container mt-5 mb-5">
+    <div class="text-center">
+      <h1>{{ self.custom_title }}</h1>
+      <div class="d-flex justify-content-center">
+        {% for item in self.blog_authors.all %}
+          {% image item.author.image fill-50x50 as img %}
+          <div>
+            <div>
+              <img src="{{ img.url }}" class="rounded-circle" alt="{{ item.author.name }}">
             </div>
-        </div>
+            {% if item.author.website %}
+              <a href="{{ item.author.website }}">
+                {{ item.author.name }}
+              </a>
+            {% else %}
+              {{ item.author.name }}
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
     </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 offset-lg-2">
+        {% for block in self.content %}
+          {% include_block block %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
 {% endblock %}
