@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "subscribers",
     "blog",
     "menus",
+    "contacts",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.contrib.settings",
