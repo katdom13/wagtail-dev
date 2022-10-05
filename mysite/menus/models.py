@@ -1,3 +1,5 @@
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from modelcluster.fields import ParentalKey
@@ -54,6 +56,17 @@ class MenuItem(Orderable):
             return self.link_page.title
         else:
             return "Missing Title"
+    
+    def save(self, *args, **kwargs):
+        # Create a template fragment key
+        key = make_template_fragment_key(
+            "navigation"
+        )
+
+        # Delete the key
+        cache.delete(key)
+
+        return super().save(*args, **kwargs)
 
 
 @register_snippet

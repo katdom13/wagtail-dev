@@ -2,6 +2,8 @@ from unicodedata import category
 from unittest.util import _MAX_LENGTH
 
 from django import forms
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
 from django.shortcuts import render
@@ -208,6 +210,18 @@ class BlogDetailsPage(Page):
         ], heading="Categories"),
         FieldPanel("content"),
     ]
+
+    def save(self, clean=True, user=None, log_action=False, **kwargs):
+        # Create a template fragment key
+        key = make_template_fragment_key(
+            "blog_post_preview",
+            [self.id]
+        )
+
+        # Delete the key
+        cache.delete(key)
+
+        return super().save(clean, user, log_action, **kwargs)
 
 
 # First subclassed page
