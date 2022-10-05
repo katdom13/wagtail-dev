@@ -1,4 +1,4 @@
-{% load static wagtailcore_tags wagtailuserbar menu_tags %}
+{% load static wagtailcore_tags wagtailuserbar menu_tags cache %}
 
 {% get_menu "main" as navigation %}
 
@@ -59,19 +59,21 @@
                     </li>
                   -->
 
-                  {% for item in navigation.menu_items.all %}
-                    <li class="nav-item">
-                      <a
-                        class="nav-link"
-                        href="{{ item.link }}"
-                        {% if item.open_in_new_tab %}
-                        target="_blank"
-                        {% endif %}
-                      >
-                        {{ item.title }}
-                      </a>
-                    </li>
-                  {% endfor %}
+                  {% cache 604800 navigation %}
+                    {% for item in navigation.menu_items.all %}
+                      <li class="nav-item">
+                        <a
+                          class="nav-link"
+                          href="{{ item.link }}"
+                          {% if item.open_in_new_tab %}
+                          target="_blank"
+                          {% endif %}
+                        >
+                          {{ item.title }}
+                        </a>
+                      </li>
+                    {% endfor %}
+                  {% endcache %}
                 </ul>
                 <!--
                     <form class="d-flex">

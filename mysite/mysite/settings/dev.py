@@ -37,6 +37,16 @@ RECAPTCHA_PRIVATE_KEY = os.environ.get("RECAPTCHA_PRIVATE_KEY")
 NOCAPTCHA = True
 
 
+# Uncomment this line to enable template caching
+# Dont forget to change the LOCATION path
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": os.environ.get("CACHE_DIR"),
+    }
+}
+
+
 try:
     from .local import *  # noqa
 except ImportError:
