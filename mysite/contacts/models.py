@@ -1,8 +1,9 @@
 from django.db import models
 from modelcluster.models import ParentalKey
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
-from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField
+from wagtail.contrib.forms.models import AbstractFormField
 from wagtail.core.fields import RichTextField
+from wagtailcaptcha.models import WagtailCaptchaEmailForm
 
 
 class FormField(AbstractFormField):
@@ -13,7 +14,7 @@ class FormField(AbstractFormField):
     )
 
 
-class ContactPage(AbstractEmailForm):
+class ContactPage(WagtailCaptchaEmailForm):
     """
     A whole page of an email contact form
     """
@@ -24,7 +25,7 @@ class ContactPage(AbstractEmailForm):
     intro = RichTextField(blank=True)
     thank_you_text = RichTextField(blank=True)
 
-    content_panels = AbstractEmailForm.content_panels + [
+    content_panels = WagtailCaptchaEmailForm.content_panels + [
         FieldPanel("intro"),
         InlinePanel("form_fields", label="Form Fields"),
         FieldPanel("thank_you_text"),

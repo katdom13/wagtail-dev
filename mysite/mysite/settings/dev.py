@@ -1,4 +1,11 @@
+import os
+
+import environ
+
 from .base import *  # noqa
+
+env = environ.Env()
+environ.Env.read_env((os.path.join(BASE_DIR, ".env.local")))  # noqa
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -21,6 +28,14 @@ MIDDLEWARE = MIDDLEWARE + [  # noqa
 ]
 
 INTERNAL_IPS = ("127.0.0.1", "172.17.0.1")
+
+# Recaptcha settings
+# This key only allows localhost. For production, you'll want your own API keys.
+# You can get Recaptcha API key from google.com/recaptcha
+RECAPTCHA_PUBLIC_KEY = os.environ.get("RECAPTCHA_PUBLIC_KEY")
+RECAPTCHA_PRIVATE_KEY = os.environ.get("RECAPTCHA_PRIVATE_KEY")
+NOCAPTCHA = True
+
 
 try:
     from .local import *  # noqa
