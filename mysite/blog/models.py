@@ -2,6 +2,7 @@ from unicodedata import category
 from unittest.util import _MAX_LENGTH
 
 from django import forms
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
 from django.shortcuts import render
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
@@ -107,15 +108,38 @@ class BlogListingPage(RoutablePageMixin, Page):
 
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
-        # "posts" will have child pages; you'll need to use .specific in the template
-        # in order to access child properties, such as youtube_video_id and subtitle
-        context["posts"] = BlogDetailsPage.objects.live().public()
         context["a_special_link"] = self.reverse_subpage("latest_posts")
         context["categories"] = BlogCategory.objects.all()
 
-        if request.GET.get("category"):
-            category = request.GET["category"]
-            context["posts"] = context["posts"].filter(categories__slug__in=[category])
+        # Get all posts
+        all_posts = BlogDetailsPage.objects.live().public().order_by("-first_published_at")
+
+        # Get the category query if it exists
+        category = request.GET.get("category")
+
+        # Filter posts by category slug if category exists
+        if category:
+            all_posts = all_posts.filter(categories__slug__in=[category])
+
+        # Paginate all posts by 2
+        paginator = Paginator(all_posts, 2)
+
+        # Try to get page query ("?page=x")
+        page = request.GET.get("page")
+
+        try:
+            # If the page exists and the ?page=x is an int
+            posts = paginator.page(page)
+        except PageNotAnInteger:
+            # If the page query is not an int, show the first page
+            posts = paginator.page(1)
+        except EmptyPage:
+            # If the page query is out of range, return the last page
+            posts = paginator.page(paginator.num_pages)
+
+        # "posts" will have child pages; you'll need to use .specific in the template
+        # in order to access child properties, such as youtube_video_id and subtitle
+        context["posts"] = posts
 
         return context
 
