@@ -1,4 +1,6 @@
-{% load static wagtailcore_tags wagtailuserbar %}
+{% load static wagtailcore_tags wagtailuserbar menu_tags %}
+
+{% get_menu "main" as navigation %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -48,12 +50,28 @@
                       <span class="visually-hidden">(current)</span>
                     </a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="/about/">About</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="/blog/">Blog</a>
-                  </li>
+                  <!--
+                    <li class="nav-item">
+                      <a class="nav-link" href="/about/">About</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/blog/">Blog</a>
+                    </li>
+                  -->
+
+                  {% for item in navigation.menu_items.all %}
+                    <li class="nav-item">
+                      <a
+                        class="nav-link"
+                        href="{{ item.link }}"
+                        {% if item.open_in_new_tab %}
+                        target="_blank"
+                        {% endif %}
+                      >
+                        {{ item.title }}
+                      </a>
+                    </li>
+                  {% endfor %}
                 </ul>
                 <!--
                     <form class="d-flex">
