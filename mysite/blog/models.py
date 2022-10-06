@@ -16,6 +16,8 @@ from wagtail.core.fields import StreamField
 from wagtail.core.models import Orderable, Page
 from wagtail.snippets.models import register_snippet
 
+from blog.serializers import ImageSerializerField
+
 
 class BlogCategory(models.Model):
     """
@@ -61,6 +63,10 @@ class BlogAuthorOrderable(Orderable):
     @property
     def author_website(self):
         return self.author.website
+    
+    @property
+    def author_image(self):
+        return self.author.image
 
     panels = [
         FieldPanel("author")
@@ -69,6 +75,7 @@ class BlogAuthorOrderable(Orderable):
     api_fields = [
         APIField("author_name"),
         APIField("author_website"),
+        APIField("author_image", serializer=ImageSerializerField())
     ]
 
 
