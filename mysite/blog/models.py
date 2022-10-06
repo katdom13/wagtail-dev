@@ -123,6 +123,7 @@ class BlogListingPage(RoutablePageMixin, Page):
     Lists all the blogs
     """
     templates = "blog/blog_listing_page.html"
+    ajax_template = "blog/blog_listing_page_ajax.html"
 
     parent_page_types = [
         "home.HomePage"
