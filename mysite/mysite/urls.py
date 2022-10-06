@@ -7,12 +7,16 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.contrib.sitemaps.views import sitemap
 from wagtail.documents import urls as wagtaildocs_urls
 
+from mysite.api import api_router
+
 urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     path("search/", search_views.search, name="search"),
     path("sitemap.xml", sitemap),
+     # Ensure that the api_router line appears above the default Wagtail page serving route
+    path("api/v2/", api_router.urls),
 ]
 
 
