@@ -14,9 +14,10 @@ from wagtail.api import APIField
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.core.fields import StreamField
 from wagtail.core.models import Orderable, Page
+from wagtail.images.api.fields import ImageRenditionField
 from wagtail.snippets.models import register_snippet
 
-from blog.serializers import ImageSerializerField
+# from blog.serializers import ImageSerializerField
 
 
 class BlogCategory(models.Model):
@@ -75,7 +76,11 @@ class BlogAuthorOrderable(Orderable):
     api_fields = [
         APIField("author_name"),
         APIField("author_website"),
-        APIField("author_image", serializer=ImageSerializerField())
+        # APIField("author_image", serializer=ImageSerializerField())
+        APIField("rendered_image", serializer=ImageRenditionField(
+            "fill-200x250",
+            source="author_image",
+        ))
     ]
 
 
@@ -118,6 +123,14 @@ class BlogListingPage(RoutablePageMixin, Page):
     Lists all the blogs
     """
     templates = "blog/blog_listing_page.html"
+
+    parent_page_types = [
+        "home.HomePage"
+    ]
+    subpage_types = [
+        "blog.ArticlePage",
+        "blog.VideoPage",
+    ]
 
     custom_title = models.CharField(
         max_length=100,
@@ -190,6 +203,11 @@ class BlogDetailsPage(Page):
     Blog detail page
     """
     templates = "blog/blog_detail_page.html"
+
+    parent_page_types = [
+        "blog.BlogListingPage"
+    ]
+    subpage_types = []
 
     custom_title = models.CharField(
         max_length=100,

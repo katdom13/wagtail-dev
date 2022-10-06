@@ -22,6 +22,12 @@ class ContactPage(WagtailCaptchaEmailForm):
     template = "contacts/contact_page.html"
     landing_page_template = "contacts/contact_page_landing.html"
 
+    parent_page_types = [
+        "flex.FlexPage",
+        "home.HomePage",
+    ]
+    subpage_types = []
+
     intro = RichTextField(blank=True)
     thank_you_text = RichTextField(blank=True)
 
