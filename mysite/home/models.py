@@ -28,8 +28,13 @@ class HomePageCarouselImages(Orderable):
         on_delete=models.SET_NULL,
         related_name="+"
     )
+
     panels = [
-        FieldPanel("image")
+        FieldPanel("image"),
+    ]
+
+    api_fields = [
+        APIField("image"),
     ]
 
 
@@ -89,6 +94,8 @@ class HomePage(RoutablePageMixin, Page):
         APIField("banner_subtitle"),
         APIField("banner_image"),
         APIField("banner_cta"),
+        APIField("carousel_images"),
+        APIField("content"),
     ]
 
     # Set verbose names (implicitly set already)

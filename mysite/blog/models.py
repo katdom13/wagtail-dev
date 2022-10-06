@@ -10,6 +10,7 @@ from django.shortcuts import render
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from streams import blocks
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
+from wagtail.api import APIField
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.core.fields import StreamField
 from wagtail.core.models import Orderable, Page
@@ -52,8 +53,22 @@ class BlogAuthorOrderable(Orderable):
         "blog.BlogAuthor",
         on_delete=models.CASCADE,
     )
+
+    @property
+    def author_name(self):
+        return self.author.name
+    
+    @property
+    def author_website(self):
+        return self.author.website
+
     panels = [
         FieldPanel("author")
+    ]
+
+    api_fields = [
+        APIField("author_name"),
+        APIField("author_website"),
     ]
 
 
@@ -209,6 +224,11 @@ class BlogDetailsPage(Page):
             FieldPanel("categories", widget=forms.CheckboxSelectMultiple)
         ], heading="Categories"),
         FieldPanel("content"),
+    ]
+
+    api_fields = [
+        APIField("blog_authors"),
+        APIField("content"),
     ]
 
     def save(self, clean=True, user=None, log_action=False, **kwargs):
