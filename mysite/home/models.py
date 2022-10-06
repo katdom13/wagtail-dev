@@ -10,6 +10,7 @@ from wagtail.admin.panels import (
     MultiFieldPanel,
     PageChooserPanel,
 )
+from wagtail.api import APIField
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.models import Orderable, Page
@@ -82,6 +83,13 @@ class HomePage(RoutablePageMixin, Page):
         FieldPanel("content"),
     ]
 
+    # Exposes fields for the headless API (details page only)
+    api_fields = [
+        APIField("banner_title"),
+        APIField("banner_subtitle"),
+        APIField("banner_image"),
+        APIField("banner_cta"),
+    ]
 
     # Set verbose names (implicitly set already)
     class Meta:
