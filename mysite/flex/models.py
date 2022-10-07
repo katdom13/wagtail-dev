@@ -5,6 +5,7 @@ Flexible page
 from django.db import models
 from streams import blocks
 from wagtail.admin.panels import FieldPanel
+from wagtail.core import blocks as wagtail_blocks
 from wagtail.core.fields import StreamField
 from wagtail.core.models import Page
 
@@ -35,6 +36,13 @@ class FlexPage(Page):
             ("card_block", blocks.CardBlock()),
             ("cta", blocks.CTABlock()),
             ("button_block", blocks.ButtonBlock()),
+            ("char_block", wagtail_blocks.CharBlock(
+                required=True,
+                help_text="This is an example help text",
+                min_length=10,
+                max_length=50,
+                template="flex/char_block.html"
+            ))
         ],
         null=True,
         blank=True,
