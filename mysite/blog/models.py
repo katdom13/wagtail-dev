@@ -189,6 +189,68 @@ class BlogListingPage(RoutablePageMixin, Page):
 
         return context
 
+    @route(r"^july-2019/$", name="july_2019")
+    @route(r"^year/(\d+)/(\d+)/$", name="blogs_by_year")
+    def blogs_by_year(self, request, year=None, month=None, *args, **kwargs):
+        context = self.get_context(request, *args, **kwargs)
+        # Implement your BlogDetailPage filter. Maybe something like this:
+        if year is not None and month is not None:
+            all_posts = BlogDetailsPage.objects.live().public().filter(
+                first_published_at__year=year, first_published_at__month=month)
+        else:
+            # No year and no month were set, assume this is july-2019 only posts
+               all_posts = BlogDetailsPage.objects.live().public().filter(
+                first_published_at__year=2019, first_published_at__month=7)
+
+        context["posts"] = all_posts
+
+        # Note: The below template (latest_posts.html) will need to be adjusted
+        return render(request, "blog/blog_listing_page.html", context)
+
+    @route(r"^category/(?P<cat_slug>[-\w]*)/$", name="category_view")
+    def category_view(self, request, cat_slug, *args, **kwargs):
+        """
+        Find blog posts based on category
+        """
+        context = self.get_context(request, *args, **kwargs)
+        all_posts = BlogDetailsPage.objects.live().public().order_by("-first_published_at")
+
+        try:
+            # Look for the blog category by its slug.
+            category = BlogCategory.objects.get(slug=cat_slug)
+            all_posts = all_posts.filter(categories__in=[category])
+        except BlogCategory.DoesNotExist:
+            # Blog category doesnt exist (ie /blog/category/missing-category/)
+            # Redirect to self.url, return a 404.. that's up to you!
+            category = None
+        
+        if category is None:
+            # This is an additional check.
+            # If the category is None, do something. Maybe default to a particular category.
+            # Or redirect the user to /blog/ ¯\_(ツ)_/¯
+            pass
+
+        paginator = Paginator(all_posts, 2)
+
+        # Try to get page query ("?page=x")
+        page = request.GET.get("page")
+
+        try:
+            # If the page exists and the ?page=x is an int
+            posts = paginator.page(page)
+        except PageNotAnInteger:
+            # If the page query is not an int, show the first page
+            posts = paginator.page(1)
+        except EmptyPage:
+            # If the page query is out of range, return the last page
+            posts = paginator.page(paginator.num_pages)
+
+        # "posts" will have child pages; you'll need to use .specific in the template
+        # in order to access child properties, such as youtube_video_id and subtitle
+        context["posts"] = posts
+
+        return render(request, "blog/blog_listing_page.html", context)
+
     @route(r"^latest/?$", name="latest_posts")
     def latest_blog_posts(self, request, *args, **kwargs):
         context = self.get_context(request, *args, **kwargs)
