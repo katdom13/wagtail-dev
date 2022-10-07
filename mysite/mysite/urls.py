@@ -17,6 +17,7 @@ urlpatterns = [
     path("sitemap.xml", sitemap),
      # Ensure that the api_router line appears above the default Wagtail page serving route
     path("api/v2/", api_router.urls),
+    path("", include('allauth.urls')),
 ]
 
 
