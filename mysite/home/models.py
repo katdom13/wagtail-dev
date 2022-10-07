@@ -8,7 +8,9 @@ from wagtail.admin.panels import (
     FieldPanel,
     InlinePanel,
     MultiFieldPanel,
+    ObjectList,
     PageChooserPanel,
+    TabbedInterface,
 )
 from wagtail.api import APIField
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
@@ -86,16 +88,31 @@ class HomePage(RoutablePageMixin, Page):
 
     content_panels = Page.content_panels + [
         MultiFieldPanel([
+            InlinePanel("carousel_images", min_num=1, max_num=5, heading="Carousel Images")
+        ], heading="Carousel Images"),
+        FieldPanel("content"),
+    ]
+
+    # This is how you'd normally hide promote and settings tabs
+    # promote_panels = []
+    # settings_panels = []
+
+    banner_panels = [
+        MultiFieldPanel([
             FieldPanel("banner_title"),
             FieldPanel("banner_subtitle"),
             FieldPanel("banner_image"),
             PageChooserPanel("banner_cta"),
         ], heading="Banner Options"),
-        MultiFieldPanel([
-            InlinePanel("carousel_images", min_num=1, max_num=5, heading="Carousel Images")
-        ], heading="Carousel Images"),
-        FieldPanel("content"),
     ]
+
+    # Overwrite the existing tabs and add an tab
+    edit_handler = TabbedInterface([
+        ObjectList(content_panels, heading="Content"),
+        ObjectList(banner_panels, heading="Banner"),
+        ObjectList(Page.promote_panels, heading="Promote"),
+        ObjectList(Page.settings_panels, heading="Settings"),
+    ])
 
     # Exposes fields for the headless API (details page only)
     api_fields = [
