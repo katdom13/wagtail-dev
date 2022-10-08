@@ -3,6 +3,7 @@ from email.policy import default
 from django.db import models
 from django.shortcuts import render
 from modelcluster.fields import ParentalKey
+from rest_framework.fields import Field
 from streams import blocks
 from wagtail.admin.panels import (
     FieldPanel,
@@ -38,6 +39,18 @@ class HomePageCarouselImages(Orderable):
     api_fields = [
         APIField("image"),
     ]
+
+
+class BannerCTASerializer(Field):
+    def to_representation(self, value):
+        return {
+            "id": value.id,
+            "title": value.title,
+            "first_published_at": value.first_published_at,
+            "owner": value.owner.username,
+            "slug": value.slug,
+            "url": value.url,
+        }
 
 
 class HomePage(RoutablePageMixin, Page):
@@ -106,12 +119,16 @@ class HomePage(RoutablePageMixin, Page):
         ], heading="Banner Options"),
     ]
 
+    settings_panels = Page.settings_panels + [
+        FieldPanel("owner")
+    ]
+
     # Overwrite the existing tabs and add an tab
     edit_handler = TabbedInterface([
         ObjectList(content_panels, heading="Content"),
         ObjectList(banner_panels, heading="Banner"),
         ObjectList(Page.promote_panels, heading="Promote"),
-        ObjectList(Page.settings_panels, heading="Settings"),
+        ObjectList(settings_panels, heading="Settings"),
     ])
 
     # Exposes fields for the headless API (details page only)
@@ -119,7 +136,7 @@ class HomePage(RoutablePageMixin, Page):
         APIField("banner_title"),
         APIField("banner_subtitle"),
         APIField("banner_image"),
-        APIField("banner_cta"),
+        APIField("banner_cta", serializer=BannerCTASerializer()),
         APIField("carousel_images"),
         APIField("content"),
     ]
