@@ -1,5 +1,6 @@
 from email.policy import default
 
+from django.conf import settings
 from django.db import models
 from django.shortcuts import render
 from modelcluster.fields import ParentalKey
@@ -99,6 +100,15 @@ class HomePage(RoutablePageMixin, Page):
         use_json_field=True,
     )
 
+    @property
+    def a_custom_api_response(self):
+        # logic goes in here
+        return {
+            "site_id": settings.SITE_ID,
+            "banner_title": self.banner_title,
+            "some_list" : [1, 2, 3]
+        }
+
     content_panels = Page.content_panels + [
         MultiFieldPanel([
             InlinePanel("carousel_images", min_num=1, max_num=5, heading="Carousel Images")
@@ -139,6 +149,7 @@ class HomePage(RoutablePageMixin, Page):
         APIField("banner_cta", serializer=BannerCTASerializer()),
         APIField("carousel_images"),
         APIField("content"),
+        APIField("a_custom_api_response"),
     ]
 
     # Set verbose names (implicitly set already)
