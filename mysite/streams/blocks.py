@@ -3,6 +3,7 @@ Streamfields live in here
 """
 
 from wagtail.core import blocks
+from wagtail.core.templatetags.wagtailcore_tags import richtext
 from wagtail.images.blocks import ImageChooserBlock
 
 
@@ -23,6 +24,8 @@ class RichtextBlock(blocks.RichTextBlock):
     """
     Richtext with all the features
     """
+    def get_api_representation(self, value, context=None):
+        return richtext(value.source)
 
     class Meta:
         template = "streams/richtext_block.html"
@@ -114,8 +117,14 @@ class ButtonBlock(blocks.StructBlock):
     """
     An external or internal URL
     """
-    button_page = blocks.PageChooserBlock(required=False, help_text='If selected, this url will be used first')
-    button_url = blocks.URLBlock(required=False, help_text='If added, this url will be used secondarily to the button page')
+    button_page = blocks.PageChooserBlock(
+        required=False,
+        help_text='If selected, this url will be used first'
+    )
+    button_url = blocks.URLBlock(
+        required=False,
+        help_text='If added, this url will be used secondarily to the button page'
+    )
 
     class Meta:
         template = "streams/button_block.html"
