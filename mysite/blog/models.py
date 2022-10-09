@@ -9,6 +9,7 @@ from django.db import models
 from django.shortcuts import render
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
+from rest_framework.fields import Field
 from streams import blocks
 from taggit.models import TaggedItemBase
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
@@ -120,6 +121,31 @@ class BlogAuthor(models.Model):
 register_snippet(BlogAuthor)
 
 
+class BlogChildPageSerializer(Field):
+    def to_representation(self, child_pages):
+        posts = []
+
+        for child in child_pages:
+            posts.append({
+                "id": child.id,
+                "title": child.title,
+                "slug": child.slug,
+                "url": child.url,
+            })
+
+        return posts
+
+        # Pythonic comprehensions
+        # return [
+        #     {
+        #         'id': child.id,
+        #         'title': child.title,
+        #         'slug': child.slug,
+        #         'url': child.url,
+        #     } for child in child_pages
+        # ]
+
+
 class BlogListingPage(RoutablePageMixin, Page):
     """
     Lists all the blogs
@@ -145,6 +171,17 @@ class BlogListingPage(RoutablePageMixin, Page):
     content_panels = Page.content_panels + [
         FieldPanel("custom_title"),
     ]
+
+    api_fields = [
+        APIField("children", serializer=BlogChildPageSerializer(source="get_child_pages")),
+    ]
+
+    @property
+    def get_child_pages(self):
+        return self.get_children().public().live()
+
+        # You can also bypass the serializer
+        # return self.get_children().public().live().values("id", "title", "slug")
 
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
